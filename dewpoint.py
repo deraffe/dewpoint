@@ -53,8 +53,8 @@ def dewpoint_2(temperature: float, relative_humidity: float) -> float:
 
 
 def dewpoint_3(t: float, rh: float) -> float:
-    H = (math.log10(rh) - 2) / 0.4343 + (17.62 * t) / (243.12 + t)
-    dp3 = 243.12 * H / (17.62 - H)
+    H = (math.log10(rh) - 2) / 0.4343 + (beta * t) / (gamma + t)
+    dp3 = gamma * H / (beta - H)
     log.debug(f'{dp3=}°C')
     return dp3
 
