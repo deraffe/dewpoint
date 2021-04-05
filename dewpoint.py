@@ -83,10 +83,12 @@ def main():
     dp3 = dewpoint_3(t, rh)
     deviation = dp3 - dp1
     log.debug(f'deviation of simple algo: {deviation}°C')
-    precision = 2
-    assert round(dp1, precision) == round(dp2, precision) == round(
-        dp3, precision
-    ), f'{dp1=} != {dp2=} != {dp3=}'
+    allowed_difference = 0.001
+    diff1 = abs(dp2 - dp1)
+    log.debug(f'{diff1=}')
+    diff2 = abs(dp3 - dp1)
+    log.debug(f'{diff2=}')
+    assert diff1 < diff2 < allowed_difference, f'{dp1=} !~ {dp2=} !~ {dp3=}'
     print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
 
 
