@@ -78,7 +78,7 @@ def main():
     assert round(dp1, precision) == round(dp2, precision) == round(
         dp3, precision
     ), f'{dp1=} != {dp2=} != {dp3=}'
-    print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp:.2f}°C')
+    print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
 
 
 if __name__ == '__main__':
