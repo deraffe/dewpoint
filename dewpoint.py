@@ -24,14 +24,14 @@ def saturation_vapour_pressure(temperature: float) -> float:
     svp = alpha * math.pow(
         math.e, (beta * temperature) / (gamma + temperature)
     )
-    log.debug(f'saturation vapour pressure at {temperature}°C: {svp}hPA')
+    log.debug(f'saturation vapour pressure at {temperature}°C: {svp:.2f}hPA')
     return svp
 
 
 def vapour_pressure(temperature: float, relative_humidity: float) -> float:
     vp = relative_humidity * saturation_vapour_pressure(temperature) / 100
     log.debug(
-        f'vapour pressure at {temperature}°C and {relative_humidity}%RH: {vp}hPA'
+        f'vapour pressure at {temperature}°C and {relative_humidity}%RH: {vp:.2f}hPA'
     )
     return vp
 
@@ -71,7 +71,7 @@ def main():
     t = args.temperature
     rh = args.relative_humidity
     dp = dewpoint(t, rh)
-    print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp}°C')
+    print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp:2.f}°C')
 
 
 if __name__ == '__main__':
