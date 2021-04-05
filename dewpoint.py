@@ -75,7 +75,7 @@ def main():
     dp1 = dewpoint_1(t, rh)
     dp2 = dewpoint_2(t, rh)
     dp3 = dewpoint_3(t, rh)
-    precision = 4
+    precision = 2
     assert round(dp1, precision) == round(dp2, precision) == round(
         dp3, precision
     ), f'{dp1=} != {dp2=} != {dp3=}'
