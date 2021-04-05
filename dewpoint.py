@@ -6,14 +6,6 @@ import math
 
 log = logging.getLogger(__name__)
 
-
-def main():
-    parser = argparse.ArgumentParser()
-
-
-if __name__ == '__main__':
-    main()
-
 # Magnus parameters between -45°C and 60°C
 alpha = 6.112  # hPA
 beta = 17.62
