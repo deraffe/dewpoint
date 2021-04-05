@@ -40,14 +40,11 @@ def dewpoint(temperature: float, relative_humidity: float) -> float:
     vp_over_alpha = vapour_pressure(temperature, relative_humidity) / alpha
     dp1 = (gamma * math.log(vp_over_alpha)) / (beta - math.log(vp_over_alpha))
     log.debug(f'{dp1=}°C')
-    dp_first_part = gamma * (
-        math.log(relative_humidity / 100) + ((beta * temperature) /
-                                             (gamma + temperature))
-    )
-    dp_second_part = beta - (
-        math.log(relative_humidity / 100) + ((beta * temperature) /
-                                             (gamma + temperature))
-    )
+    dp_zeroeth_part = math.log(relative_humidity / 100
+                               ) + ((beta * temperature) /
+                                    (gamma + temperature))
+    dp_first_part = gamma * dp_zeroeth_part
+    dp_second_part = beta - dp_zeroeth_part
     dp = dp_first_part / dp_second_part
 
     assert round(dp1, 10) == round(dp, 10), f'{dp1=} != {dp=}'
