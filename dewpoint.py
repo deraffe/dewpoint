@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Calculate the dewpoint for a give temperature and relative humidity.
+
+Based on information from Sensirion[0].
+
+0. http://irtfweb.ifa.hawaii.edu/~tcs3/tcs3/Misc/Dewpoint_Calculation_Humidity_Sensor_E.pdf
+"""
 
 import argparse
 import logging
