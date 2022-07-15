@@ -16,7 +16,8 @@ log = logging.getLogger(__name__)
 alpha = 6.112  # hPA
 beta = 17.62
 gamma = 243.12  # °C
-
+t_low = -45
+t_high = 60
 
 def saturation_vapour_pressure(temperature: float) -> float:
     svp = alpha * math.pow(
@@ -77,6 +78,8 @@ def main():
     logging.basicConfig(level=loglevel)
 
     t = args.temperature
+    if not t_low < t < t_high:
+        log.warning(f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)')
     rh = args.relative_humidity
     dp1 = dewpoint_1(t, rh)
     dp2 = dewpoint_2(t, rh)
