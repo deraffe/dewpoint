@@ -15,13 +15,14 @@ log = logging.getLogger(__name__)
 # Magnus parameters between -45°C and 60°C
 alpha = 6.112  # hPA
 beta = 17.62
-gamma = 243.12  # °C
+lambda_ = 243.12  # °C
 t_low = -45
 t_high = 60
 
+
 def saturation_vapour_pressure(temperature: float) -> float:
     svp = alpha * math.pow(
-        math.e, (beta * temperature) / (gamma + temperature)
+        math.e, (beta * temperature) / (lambda_ + temperature)
     )
     log.debug(f'saturation vapour pressure at {temperature}°C: {svp:.2f}hPA')
     return svp
@@ -37,7 +38,8 @@ def vapour_pressure(temperature: float, relative_humidity: float) -> float:
 
 def dewpoint_1(temperature: float, relative_humidity: float) -> float:
     vp_over_alpha = vapour_pressure(temperature, relative_humidity) / alpha
-    dp1 = (gamma * math.log(vp_over_alpha)) / (beta - math.log(vp_over_alpha))
+    dp1 = (lambda_ *
+           math.log(vp_over_alpha)) / (beta - math.log(vp_over_alpha))
     log.debug(f'{dp1=}°C')
     return dp1
 
@@ -45,8 +47,8 @@ def dewpoint_1(temperature: float, relative_humidity: float) -> float:
 def dewpoint_2(temperature: float, relative_humidity: float) -> float:
     dp_zeroeth_part = math.log(relative_humidity / 100
                                ) + ((beta * temperature) /
-                                    (gamma + temperature))
-    dp_first_part = gamma * dp_zeroeth_part
+                                    (lambda_ + temperature))
+    dp_first_part = lambda_ * dp_zeroeth_part
     dp_second_part = beta - dp_zeroeth_part
     dp2 = dp_first_part / dp_second_part
     log.debug(f'{dp2=}°C')
@@ -54,8 +56,8 @@ def dewpoint_2(temperature: float, relative_humidity: float) -> float:
 
 
 def dewpoint_3(t: float, rh: float) -> float:
-    H = (math.log10(rh) - 2) / 0.4343 + (beta * t) / (gamma + t)
-    dp3 = gamma * H / (beta - H)
+    H = (math.log10(rh) - 2) / 0.4343 + (beta * t) / (lambda_ + t)
+    dp3 = lambda_ * H / (beta - H)
     log.debug(f'{dp3=}°C')
     return dp3
 
@@ -79,7 +81,9 @@ def main():
 
     t = args.temperature
     if not t_low < t < t_high:
-        log.warning(f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)')
+        log.warning(
+            f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)'
+        )
     rh = args.relative_humidity
     dp1 = dewpoint_1(t, rh)
     dp2 = dewpoint_2(t, rh)
