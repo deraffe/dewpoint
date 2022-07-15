@@ -107,7 +107,7 @@ def main():
     logging.basicConfig(level=loglevel)
 
     t = args.temperature
-    rh = getattr(args, 'relative_humidity', None)
+    rh = args.relative_humidity
     td = args.dew_point
 
     if t is not None and rh is not None:
