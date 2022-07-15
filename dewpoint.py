@@ -62,13 +62,28 @@ def dewpoint_3(t: float, rh: float) -> float:
     return dp3
 
 
+def relative_humidity(t: float, td: float) -> float:
+    rh = saturation_vapour_pressure(td) / saturation_vapour_pressure(t)
+    log.debug(f'{rh=:%}')
+    return rh
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        'temperature', type=float, help='temperature in degrees celsius'
+        '-t',
+        '--temperature',
+        type=float,
+        help='temperature in degrees celsius'
     )
     parser.add_argument(
-        'relative_humidity', type=float, help='relative humidity in percent'
+        '-r',
+        '--relative_humidity',
+        type=float,
+        help='relative humidity in percent'
+    )
+    parser.add_argument(
+        '-d', '--dew_point', type=float, help='dew point in degrees celcius'
     )
     parser.add_argument(
         '--loglevel', default='WARNING', help="Loglevel", action='store'
@@ -80,23 +95,38 @@ def main():
     logging.basicConfig(level=loglevel)
 
     t = args.temperature
-    if not t_low < t < t_high:
-        log.warning(
-            f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)'
+    rh = getattr(args, 'relative_humidity', None)
+    td = args.dew_point
+
+    if t is not None and rh is not None:
+        log.info('Calculating dew point...')
+        if not t_low < t < t_high:
+            log.warning(
+                f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)'
+            )
+        dp1 = dewpoint_1(t, rh)
+        dp2 = dewpoint_2(t, rh)
+        dp3 = dewpoint_3(t, rh)
+        deviation = dp3 - dp1
+        log.debug(f'deviation of simple algo: {deviation}°C')
+        allowed_difference = 0.001
+        diff1 = abs(dp2 - dp1)
+        log.debug(f'{diff1=}')
+        diff2 = abs(dp3 - dp1)
+        log.debug(f'{diff2=}')
+        assert diff1 < diff2 < allowed_difference, f'{dp1=} !~ {dp2=} !~ {dp3=}'
+        print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
+    elif t is not None and td is not None:
+        log.info('Calculating relative humidity...')
+        rh = relative_humidity(t, td)
+        print(f'The relative humidity at {t}°C and {td}°C dewpoint is {rh:%}')
+    elif rh is not None and td is not None:
+        log.info('Calculating temperature...')
+        raise NotImplementedError()
+    else:
+        log.fatal(
+            'Provide at least two of temperature, relative humidity and dew point.'
         )
-    rh = args.relative_humidity
-    dp1 = dewpoint_1(t, rh)
-    dp2 = dewpoint_2(t, rh)
-    dp3 = dewpoint_3(t, rh)
-    deviation = dp3 - dp1
-    log.debug(f'deviation of simple algo: {deviation}°C')
-    allowed_difference = 0.001
-    diff1 = abs(dp2 - dp1)
-    log.debug(f'{diff1=}')
-    diff2 = abs(dp3 - dp1)
-    log.debug(f'{diff2=}')
-    assert diff1 < diff2 < allowed_difference, f'{dp1=} !~ {dp2=} !~ {dp3=}'
-    print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
 
 
 if __name__ == '__main__':
