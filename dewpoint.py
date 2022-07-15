@@ -63,9 +63,20 @@ def dewpoint_3(t: float, rh: float) -> float:
 
 
 def relative_humidity(t: float, td: float) -> float:
-    rh = saturation_vapour_pressure(td) / saturation_vapour_pressure(t)
-    log.debug(f'{rh=:%}')
-    return rh
+    rhd = saturation_vapour_pressure(td) / saturation_vapour_pressure(t)
+    log.debug(f'{rhd=:%}')
+    return rhd
+
+
+def temperature(td: float, rh: float) -> float:
+    rhd = rh / 100
+    pst = saturation_vapour_pressure(td) / rhd
+    log.debug(
+        f'saturation vapour pressure for wanted temperature: {pst:.2f}hPA'
+    )
+    t = (lambda_ * math.log(pst / alpha)) / (beta - math.log(pst / alpha))
+    log.debug(f'Temperature: {t:.2f}°C')
+    return t
 
 
 def main():
@@ -118,11 +129,16 @@ def main():
         print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
     elif t is not None and td is not None:
         log.info('Calculating relative humidity...')
-        rh = relative_humidity(t, td)
-        print(f'The relative humidity at {t}°C and {td}°C dewpoint is {rh:%}')
+        rhd = relative_humidity(t, td)
+        print(
+            f'The relative humidity at {t}°C and {td}°C dewpoint is {rhd:.2%}'
+        )
     elif rh is not None and td is not None:
         log.info('Calculating temperature...')
-        raise NotImplementedError()
+        t = temperature(td, rh)
+        print(
+            f'The temperature for dewpoint {td:.2f}°C and relative humidity of {rh}% is {t:.2f}°C'
+        )
     else:
         log.fatal(
             'Provide at least two of temperature, relative humidity and dew point.'
