@@ -110,12 +110,14 @@ def main():
     rh = args.relative_humidity
     td = args.dew_point
 
-    if t is not None and rh is not None:
-        log.info('Calculating dew point...')
+    if t is not None:
         if not t_low < t < t_high:
             log.warning(
                 f'Temperature {t}°C is outside of the bounds for which the used constants are defined. ({t_low}°C – {t_high}°C)'
             )
+
+    if t is not None and rh is not None:
+        log.info('Calculating dew point...')
         dp1 = dewpoint_1(t, rh)
         dp2 = dewpoint_2(t, rh)
         dp3 = dewpoint_3(t, rh)
