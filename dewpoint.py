@@ -63,6 +63,21 @@ def dewpoint_3(t: float, rh: float) -> float:
     return dp3
 
 
+def dewpoint_all(t: float, rh: float) -> float:
+    dp1 = dewpoint_1(t, rh)
+    dp2 = dewpoint_2(t, rh)
+    dp3 = dewpoint_3(t, rh)
+    deviation = dp3 - dp1
+    log.debug(f'deviation of simple algo: {deviation}°C')
+    allowed_difference = 0.001
+    diff1 = abs(dp2 - dp1)
+    log.debug(f'{diff1=}')
+    diff2 = abs(dp3 - dp1)
+    log.debug(f'{diff2=}')
+    assert diff1 < diff2 < allowed_difference, f'{dp1=} !~ {dp2=} !~ {dp3=}'
+    return dp1
+
+
 def relative_humidity(t: float, td: float) -> float:
     rhd = saturation_vapour_pressure(td) / saturation_vapour_pressure(t)
     log.debug(f'{rhd=:%}')
@@ -118,18 +133,8 @@ def main():
 
     if t is not None and rh is not None:
         log.info('Calculating dew point...')
-        dp1 = dewpoint_1(t, rh)
-        dp2 = dewpoint_2(t, rh)
-        dp3 = dewpoint_3(t, rh)
-        deviation = dp3 - dp1
-        log.debug(f'deviation of simple algo: {deviation}°C')
-        allowed_difference = 0.001
-        diff1 = abs(dp2 - dp1)
-        log.debug(f'{diff1=}')
-        diff2 = abs(dp3 - dp1)
-        log.debug(f'{diff2=}')
-        assert diff1 < diff2 < allowed_difference, f'{dp1=} !~ {dp2=} !~ {dp3=}'
-        print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp1:.2f}°C')
+        dp = dewpoint_all(t, rh)
+        print(f'The dewpoint at {t}°C and {rh}% rel. humidity is {dp:.2f}°C')
     elif t is not None and td is not None:
         log.info('Calculating relative humidity...')
         rhd = relative_humidity(t, td)
